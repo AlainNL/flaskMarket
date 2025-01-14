@@ -1,8 +1,24 @@
 from flask import Flask, render_template
-app = Flask(__name__)
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import DeclarativeBase
 
-if __name__ == '__main__':
-    app.run(debug=True)
+class Base(DeclarativeBase):
+    pass
+db = SQLAlchemy(model_class=Base)
+
+# create the app
+app = Flask(__name__)
+# configure the SQLite database, relative to the app instance folder
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///market.db"
+# initialize the app with the extension
+db.init_app(app)
+
+class Item(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(length=30), nullable=False, unique=True )
+    price = db.Column(db.Integer(), nullable=False)
+    barcode = db.Column(db.String(length=12), nullable=False, unique=True)
+    description = db.Column(db.String(length=1024), nullable=False, unique=True)
 
 @app.route('/')
 @app.route('/home')
@@ -17,3 +33,7 @@ def market_page():
         {'id': 3, 'name': 'Keyboard', 'barcode': '231985128446', 'price': 150}
     ]
     return render_template('market.html', items=items)
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
