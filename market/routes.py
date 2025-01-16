@@ -1,13 +1,14 @@
-from flask import render_template
-from market import db
+from flask import Blueprint, render_template
 from market.models import User, Item
 
-@app.route('/')
-@app.route('/home')
+main = Blueprint('main', __name__)
+
+@main.route('/')
+@main.route('/home')
 def home_page():
     return render_template('home.html')
 
-@app.route('/market')
+@main.route('/market')
 def market_page():
     items = Item.query.all()
     return render_template('market.html', items=items)
