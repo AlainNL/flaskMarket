@@ -1,6 +1,10 @@
+import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from dotenv import load_dotenv
+load_dotenv()
+
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -10,6 +14,7 @@ def create_app():
 
     # Configurer la base de données
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///market.db"
+    app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
     db.init_app(app)
 
     # Enregistrer le Blueprint
