@@ -12,7 +12,8 @@ db = SQLAlchemy()
 migrate = Migrate()
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
-
+login_manager.login_view = "main.login_page"
+login_manager.login_message_category = "info"
 
 def create_app():
 

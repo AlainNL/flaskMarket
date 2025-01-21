@@ -1,7 +1,7 @@
 from flask import Blueprint, redirect, render_template, url_for, flash, get_flashed_messages
 from market.models import User, Item, db
 from market.forms import RegisterForm, LoginForm
-from flask_login import login_user
+from flask_login import login_user, logout_user, login_required
 
 main = Blueprint('main', __name__)
 
@@ -11,6 +11,7 @@ def home_page():
     return render_template('home.html')
 
 @main.route('/market')
+@login_required
 def market_page():
     items = Item.query.all()
     return render_template('market.html', items=items)
@@ -24,6 +25,8 @@ def register_page():
                               password=form.password1.data)
         db.session.add(user_to_create)
         db.session.commit()
+        login_user(user_to_create)
+        flash(f'Account created successfully! Your are now logged in as {user_to_create}', category='success')
         return redirect(url_for('main.market_page'))
     if form.errors != {}: #If there are not errors from the validations
         for err_msg in form.errors.values():
@@ -46,3 +49,9 @@ def login_page():
             flash('Username and password are not match! Please try again', category='danger')
 
     return render_template('login.html', form=form)
+
+@main.route('/logout')
+def logout_page():
+    logout_user()
+    flash("You have been logged out!", category='info')
+    return redirect(url_for('main.home_page'))
